@@ -23,10 +23,11 @@ import view.ViewManager;
 public class MainWithDB {
 
     /**
-     * The main method for starting the program with an external database used to persist user data.
+     * The main method for starting the program with an external database used
+     * to persist user data.
      * @param args input to main
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         // Build the main program window, the main panel containing the
         // various cards, and the layout, and stitch them together.
 
@@ -44,27 +45,28 @@ public class MainWithDB {
         final ViewManagerModel viewManagerModel = new ViewManagerModel();
         new ViewManager(views, cardLayout, viewManagerModel);
 
-        // The data for the views, such as username and password, are in the ViewModels.
-        // This information will be changed by a presenter object that is reporting the
-        // results from the use case. The ViewModels are "observable", and will
-        // be "observed" by the Views.
+        // The data for the views, such as username and password, are in the
+        // ViewModels. This information will be changed by a presenter object
+        // that is reporting the results from the use case. The ViewModels are
+        // "observable", and will be "observed" by the Views.
         final LoginViewModel loginViewModel = new LoginViewModel();
         final LoggedInViewModel loggedInViewModel = new LoggedInViewModel();
         final SignupViewModel signupViewModel = new SignupViewModel();
 
-        // TODO Task 1.1 in a copy of this file, change this line to use the in-memory DAO.
-        final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(new CommonUserFactory());
+        final DBUserDataAccessObject userDataAccessObject = new
+                DBUserDataAccessObject(new CommonUserFactory());
 
-        final SignupView signupView = SignupUseCaseFactory.create(viewManagerModel, loginViewModel,
-                                                                  signupViewModel, userDataAccessObject);
+        final SignupView signupView = SignupUseCaseFactory.create(
+                viewManagerModel, loginViewModel, signupViewModel,
+                userDataAccessObject);
         views.add(signupView, signupView.getViewName());
 
-        final LoginView loginView = LoginUseCaseFactory.create(viewManagerModel, loginViewModel,
-                                                               loggedInViewModel, userDataAccessObject);
+        final LoginView loginView = LoginUseCaseFactory.create(viewManagerModel,
+                loginViewModel, loggedInViewModel, userDataAccessObject);
         views.add(loginView, loginView.getViewName());
 
-        final LoggedInView loggedInView = ChangePasswordUseCaseFactory.create(viewManagerModel,
-                                                                              loggedInViewModel, userDataAccessObject);
+        final LoggedInView loggedInView = ChangePasswordUseCaseFactory.create(
+                viewManagerModel, loggedInViewModel, userDataAccessObject);
         views.add(loggedInView, loggedInView.getViewName());
 
         viewManagerModel.setState(signupView.getViewName());
