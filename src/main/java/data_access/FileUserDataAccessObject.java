@@ -19,17 +19,37 @@ import use_case.signup.SignupUserDataAccessInterface;
 /**
  * DAO for user data implemented using a File to persist the data.
  */
-public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
-                                                 LoginUserDataAccessInterface,
-                                                 ChangePasswordUserDataAccessInterface {
+public class FileUserDataAccessObject implements
+        SignupUserDataAccessInterface, LoginUserDataAccessInterface,
+        ChangePasswordUserDataAccessInterface {
 
+    /**
+     * Header = "username,password".
+     */
     private static final String HEADER = "username,password";
 
+    /**
+     * File csvFile.
+     */
     private final File csvFile;
+    /**
+     * Map from String to Integer.
+     */
     private final Map<String, Integer> headers = new LinkedHashMap<>();
+    /**
+     * Map from String to User.
+     */
     private final Map<String, User> accounts = new HashMap<>();
 
-    public FileUserDataAccessObject(String csvPath, UserFactory userFactory) throws IOException {
+    /**
+     * FileUserDataAccessObject.
+     * @param csvPath a String
+     * @param userFactory a userFactory
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public FileUserDataAccessObject(final String csvPath,
+                                    final UserFactory userFactory)
+            throws IOException {
 
         csvFile = new File(csvPath);
         headers.put("username", 0);
@@ -40,18 +60,23 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         }
         else {
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new FileReader(csvFile))) {
                 final String header = reader.readLine();
 
                 if (!header.equals(HEADER)) {
-                    throw new RuntimeException(String.format("header should be%n: %s%but was:%n%s", HEADER, header));
+                    throw new RuntimeException(String.format(
+                            "header should be%n: %s%but was:%n%s",
+                            HEADER, header));
                 }
 
                 String row;
                 while ((row = reader.readLine()) != null) {
                     final String[] col = row.split(",");
-                    final String username = String.valueOf(col[headers.get("username")]);
-                    final String password = String.valueOf(col[headers.get("password")]);
+                    final String username = String.valueOf(col[headers
+                            .get("username")]);
+                    final String password = String.valueOf(col[headers
+                            .get("password")]);
                     final User user = userFactory.create(username, password);
                     accounts.put(username, user);
                 }
@@ -81,24 +106,60 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         }
     }
 
+    /**
+     * Overrides save method.
+     * @param user the user to save
+     */
     @Override
-    public void save(User user) {
+    public void save(final User user) {
         accounts.put(user.getName(), user);
         this.save();
     }
 
+    /**
+     * Overrides get method.
+     * @param username the username to look up
+     * @return a User with the given username
+     */
     @Override
-    public User get(String username) {
+    public User get(final String username) {
         return accounts.get(username);
     }
 
+    /**
+     * Overrides setter for current user.
+     * @param name of the user
+     */
     @Override
-    public boolean existsByName(String identifier) {
+    public void setCurrentUser(final String name) {
+
+    }
+
+    /**
+     * Overrides getter for current user.
+     * @return the empty string
+     */
+    @Override
+    public String getCurrentUser() {
+        return "";
+    }
+
+    /**
+     * Overrides exists by name method.
+     * @param identifier the username to look for
+     * @return if accounts contains key
+     */
+    @Override
+    public boolean existsByName(final String identifier) {
         return accounts.containsKey(identifier);
     }
 
+    /**
+     * Override change password method.
+     * @param user the user whose password is to be updated
+     */
     @Override
-    public void changePassword(User user) {
+    public void changePassword(final User user) {
         // Replace the User object in the map
         accounts.put(user.getName(), user);
         save();
