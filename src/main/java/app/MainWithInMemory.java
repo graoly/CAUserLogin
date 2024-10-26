@@ -1,7 +1,12 @@
 package app;
 
+import java.awt.CardLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
 import data_access.InMemoryUserDataAccessObject;
-import entity.CommonUserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginViewModel;
@@ -11,16 +16,14 @@ import view.LoginView;
 import view.SignupView;
 import view.ViewManager;
 
-import javax.swing.*;
-import java.awt.*;
-
 /**
  * The version of Main with an external database used to persist user data.
  */
 public class MainWithInMemory {
 
     /**
-     * The main method for starting the program with an external database used to persist user data.
+     * The main method for starting the program with an external database used
+     * to persist user data.
      * @param args input to main
      */
     public static void main(String[] args) {
@@ -41,27 +44,29 @@ public class MainWithInMemory {
         final ViewManagerModel viewManagerModel = new ViewManagerModel();
         new ViewManager(views, cardLayout, viewManagerModel);
 
-        // The data for the views, such as username and password, are in the ViewModels.
-        // This information will be changed by a presenter object that is reporting the
-        // results from the use case. The ViewModels are "observable", and will
-        // be "observed" by the Views.
+        // The data for the views, such as username and password, are in the
+        // ViewModels. This information will be changed by a presenter object
+        // that is reporting the results from the use case. The ViewModels are
+        // "observable", and will be "observed" by the Views.
         final LoginViewModel loginViewModel = new LoginViewModel();
         final LoggedInViewModel loggedInViewModel = new LoggedInViewModel();
         final SignupViewModel signupViewModel = new SignupViewModel();
 
-        // TODO Task 1.1 in a copy of this file, change this line to use the in-memory DAO.
-        final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject userDataAccessObject = new
+                InMemoryUserDataAccessObject();
 
-        final SignupView signupView = SignupUseCaseFactory.create(viewManagerModel, loginViewModel,
-                                                                  signupViewModel, userDataAccessObject);
+        final SignupView signupView = SignupUseCaseFactory.create(
+                viewManagerModel, loginViewModel, signupViewModel,
+                userDataAccessObject);
         views.add(signupView, signupView.getViewName());
 
-        final LoginView loginView = LoginUseCaseFactory.create(viewManagerModel, loginViewModel,
-                                                               loggedInViewModel, userDataAccessObject);
+        final LoginView loginView = LoginUseCaseFactory.create(
+                viewManagerModel, loginViewModel, loggedInViewModel,
+                userDataAccessObject);
         views.add(loginView, loginView.getViewName());
 
-        final LoggedInView loggedInView = ChangePasswordUseCaseFactory.create(viewManagerModel,
-                                                                              loggedInViewModel, userDataAccessObject);
+        final LoggedInView loggedInView = ChangePasswordUseCaseFactory.create(
+                viewManagerModel, loggedInViewModel, userDataAccessObject);
         views.add(loggedInView, loggedInView.getViewName());
 
         viewManagerModel.setState(signupView.getViewName());
